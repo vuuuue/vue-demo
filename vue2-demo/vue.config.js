@@ -1,10 +1,6 @@
 const { defineConfig } = require("@vue/cli-service");
+const webpackConfig = require('./webpack.config')
 module.exports = defineConfig({
   transpileDependencies: true,
-  configureWebpack: {
-    externals: {
-      axios: 'axios',
-      echarts: 'echarts'
-    }
-}
+  configureWebpack: webpackConfig
 });
