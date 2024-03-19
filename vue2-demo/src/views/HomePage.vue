@@ -15,14 +15,7 @@
       <div class="title">
         热门课程
       </div>
-      <div class="hot-card" v-for="(item, index) in hotList" :key="index">
-        <div>
-        <img :src="item.imgSrc" alt="">
-      </div>
-      <div>
-        {{ item.title }}
-      </div>
-      </div>
+        <CouresList/>
     </div>
   </div>
 </template>
@@ -35,9 +28,12 @@ import java from '@/assets/java.png'
 import more from '@/assets/more.png'
 import python from '@/assets/python.png'
 import vue from '@/assets/vue.png'
-
+import CouresList  from '@/components/CouresList.vue'
 export default {
   name: "HomePage",
+  components: {
+    CouresList
+  },
   data(){
     return {
       search: '',
@@ -65,27 +61,7 @@ export default {
       {
         title:'more',
         imgSrc:more
-      },],
-      hotList:[{
-        title:'h5开发',
-        imgSrc:h5
-      },
-      {
-        title:'js开发',
-        imgSrc:js
-      },
-      {
-        title:'java开发',
-        imgSrc:java
-      },
-      {
-        title:'python开发',
-        imgSrc:python
-      },
-      {
-        title:'vue开发',
-        imgSrc:vue
-      }]
+      },]
     }
   },
   watch:{
@@ -155,17 +131,6 @@ export default {
   .title{
     font-size: 18px;
   }
-  .hot-card{
-    border: 1px solid #ccc;
-    padding: 12px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    div{
-      img{
-        width: 40px;
-      }
-    }
-  }
+  
 }
 </style>
