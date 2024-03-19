@@ -4,8 +4,9 @@
     <img src="../assets/logo.png" alt="logo">
     <span>前端学习</span>
   </div>
-  <div class="login">
-    <span>请登录</span>
+  <div class="login" @click="$router.push('/My')">
+    <span v-show="!login">请登录</span>
+    <span v-show="login">{{login}}</span>
   </div>
  </div>
 </template>
@@ -16,6 +17,13 @@ export default {
   props: {
     msg: String,
   },
+  computed:{
+    login(){
+      return this.$store.state.userName
+    }
+  },
+  watch:{
+  }
 };
 </script>
 
