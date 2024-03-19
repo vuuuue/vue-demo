@@ -26,6 +26,11 @@ const routes = [
     name: "Message",
     component: () => import(/* webpackChunkName: "Message" */ "../views/MessagePage.vue")
   },
+  {
+    path: "/message-add",
+    name: "MessageAdd",
+    component: () => import(/* webpackChunkName: "MessageAddPage" */ "../views/MessageAddPage.vue")
+  },
 ];
 
 const router = new VueRouter({
