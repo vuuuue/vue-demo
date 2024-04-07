@@ -15,6 +15,27 @@ export default new Vuex.Store({
         start: false
       },
       {
+        id: 1,
+        title: 'js的几个小问题(精华)',
+        content: 'js中怎样实现循环',
+        time: '2024-01-01 12:12:12',
+        start: true
+      },
+      {
+        id: 2,
+        title: 'h5的几个小问题(精华)',
+        content: '新增的标签有什么好处',
+        time: '2024-02-3 12:12:12',
+        start: true
+      },
+      {
+        id: 1,
+        title: 'js怎样执行了(精华)',
+        content: '怎样让他等待',
+        time: '2024-01-11 12:12:12',
+        start: true
+      },
+      {
         id: 2,
         title: 'h5的问题',
         content: 'h5新增了哪一些标签',
@@ -22,29 +43,8 @@ export default new Vuex.Store({
         start: false
       },
       {
-        id: 1,
-        title: 'js的几个小问题',
-        content: 'js中怎样实现循环',
-        time: '2024-01-01 12:12:12',
-        start: true
-      },
-      {
         id: 2,
-        title: 'h5的几个小问题',
-        content: '新增的标签有什么好处',
-        time: '2024-02-3 12:12:12',
-        start: true
-      },
-      {
-        id: 1,
-        title: 'js怎样执行了',
-        content: '怎样让他等待',
-        time: '2024-01-11 12:12:12',
-        start: true
-      },
-      {
-        id: 2,
-        title: 'js中promise',
+        title: 'js中promise(精华)',
         content: 'promise中几个状态',
         time: '2024-02-15 12:12:12',
         start: true
