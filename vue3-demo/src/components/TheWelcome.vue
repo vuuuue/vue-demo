@@ -11,7 +11,7 @@ const getContactList = (): Promise<TransferPersonInfo[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       let list = []
-      for (let i = 0; i < 500000; i++) {
+      for (let i = 0; i < 200; i++) {
         list.push({
           name: '张三' + i,
           phone: '1234567890' + i,
@@ -40,17 +40,12 @@ const viewHeight = ref(0) // 容器高度
 const getHeight = () => {
   const item = document.querySelector<HTMLDivElement>('.person-info-card')
   const view = document.querySelector<HTMLDivElement>('.person-info-view')
-    console.log('---view---', view);
-  console.log('---item---', item);
-
   itemHeight.value = item ? item.offsetHeight : 0
   viewHeight.value = view ? view.offsetHeight : 0
   console.log('itemHeight', itemHeight.value)
   console.log('viewHeight', viewHeight.value)
 }
 nextTick(getHeight)
-
-
 // 滚动事件
 const handleScroll = (e: Event) => {
   if (itemHeight.value === 0 || viewHeight.value === 0) {
@@ -62,7 +57,7 @@ const handleScroll = (e: Event) => {
   // 初始索引 = 滚动距离 / 每一项的高度
   const startIndex = Math.floor(scrollTop.value / itemHeight.value)
   // 结束索引 = 初始索引 + 容器高度 / 每一项的高度
-  const endIndex = Math.ceil(startIndex + 1 + viewHeight.value / itemHeight.value) 
+  const endIndex = Math.ceil(startIndex + viewHeight.value / itemHeight.value) 
   // 根据初始索引和结束索引，截取数据
   showData.value = transferContactList.value.slice(startIndex, endIndex)
 }
@@ -72,8 +67,11 @@ const handleScroll = (e: Event) => {
 <template>
   <div class="view-content person-info-view" @scroll="handleScroll">
     <div class="contact-content-container" :style="{height: `${transferContactList.length * itemHeight}px`}" >
+      <!-- 为了正确实现滚动效果。偏移量一直和scrollTop相同，那就没有滚动效果了就只是渲染区域数据改变-->
+      <!-- 所以这里不要要让他进行偏移让他随着父元素去滚动，当滚动距离（scrollTop）大于等于'一个item'
+        (也就是下面计算公式如果有御书说明是在item上滚动当余数为0说明正好item滚动结束了)时候才算一个item的偏移量 -->
       <div class="item-container "
-      :style="{ transform: `translateY(${scrollTop}px)`}">
+      :style="{ transform: `translateY(${scrollTop - (scrollTop % itemHeight)}px)`}">
         <div class="item person-info-card" v-for="(item, index) in showData" :key="index">
           {{ item.phoneNo }}
         </div>
@@ -82,6 +80,9 @@ const handleScroll = (e: Event) => {
   </div>
 </template>
 <style>
+body{
+  padding-top: 200px;
+}
 .view-content {
   width: 200px;
   height: 400px;
@@ -94,7 +95,7 @@ const handleScroll = (e: Event) => {
   height: 1000px;
 }
 .item-container{
-  position: absolute;
+  /* position: absolute; */
   overflow: hidden;
 }
 
