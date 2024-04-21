@@ -32,13 +32,13 @@ onUpdated(() => {
       itemHeight.value = height
     }
 })
-// 滚动区域高度
+// 滚动区域高度--用于充开滚动条
 const scrollHeight = computed(() => {
   return itemHeight.value * props.listData.length
 })
 // 滚动上方距离
 const scrollTop = ref(0)
-// itemcontent的偏移量
+// itemContent的偏移量
 const offsetY = computed(() => {
   return scrollTop.value - (scrollTop.value % itemHeight.value)
 })
