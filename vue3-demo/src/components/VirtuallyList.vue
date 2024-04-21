@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: '100%'
   },
+  buffer:{
+    type: Number,
+    default: 10
+  }
 })
 // item元素
 const items = ref<(Element[])>([])
@@ -40,7 +44,7 @@ const scrollHeight = computed(() => {
 const scrollTop = ref(0)
 // itemContent的偏移量
 const offsetY = computed(() => {
-  return scrollTop.value - (scrollTop.value % itemHeight.value)
+  return scrollTop.value - (scrollTop.value % itemHeight.value) - Math.min(props.buffer, startIndex.value) * itemHeight.value
 })
 // 开始索引
 const startIndex = computed(() => {
@@ -56,11 +60,11 @@ onMounted(() => {
 })
 // 结束索引
 const endIndex = computed(() => {
-  return Math.ceil(startIndex.value + (viewHeight.value / itemHeight.value)) || 1
+  return Math.ceil(startIndex.value + (viewHeight.value / itemHeight.value)) + props.buffer || 1
 })
 // 显示的数据
 const visibleData = computed(() => {
-  return props.listData.slice(startIndex.value, endIndex.value)
+  return props.listData.slice(Math.max(startIndex.value - props.buffer, 0), endIndex.value)
 })
 // 滚动事件
 const scrollHandle = (e: Event) => {

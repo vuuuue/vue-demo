@@ -31,6 +31,7 @@ getContactList().then((res) => {
 </script>
 
 <template>
+    <div class="box"></div>
     <div style="height: 400px">
         <VirtuallyList  :listData="transferContactList" v-slot="slotProps">
             <div class="item" style="height: 28px;">
@@ -42,6 +43,9 @@ getContactList().then((res) => {
 </template>
 
 <style scoped>
+html{
+    padding-top: 400px !important;
+}
 .item{
     display: flex;
     justify-content: center;
