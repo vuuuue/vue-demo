@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 type TransferPersonInfo = {
   name: string
   phone: string
@@ -23,19 +23,28 @@ const getContactList = (): Promise<TransferPersonInfo[]> => {
     }, 100)
   })
 }
-const transferContactList = ref<TransferPersonInfo[]>([])
-const showData = ref<TransferPersonInfo[]>([]) // 显示的数据
+const transferContactList = ref<TransferPersonInfo[]>([]) // 真实数据
 
 getContactList().then((res) => {
   transferContactList.value = res
-  showData.value = transferContactList.value.slice(0, 20) // 初始展示的数据 （前20个）
-  console.log('---data---', showData.value)
 })
-
-
-const scrollTop = ref(0) // 初始滚动距离
+const scrollTop = ref(0) // 滚动距离
 const itemHeight = ref(0) // 每一个item的高度
 const viewHeight = ref(0) // 容器高度
+const  startIndex = ref(0) // 开始索引
+const  endIndex = ref(20) // 结束索引-默认展示20个
+// 滚动区域高度
+const scrollViewHeight = computed(() => {
+  return `${transferContactList.value.length * itemHeight.value}px`
+})
+// 偏移量
+const transferY = computed(() => {
+  return scrollTop.value - (scrollTop.value % itemHeight.value)
+})
+// 真实数据
+const showData = computed(() =>{
+  return transferContactList.value.slice(startIndex.value, endIndex.value)
+})
 
 const getHeight = () => {
   const item = document.querySelector<HTMLDivElement>('.person-info-card')
@@ -55,23 +64,20 @@ const handleScroll = (e: Event) => {
   scrollTop.value = (e.target as HTMLElement).scrollTop
   console.log('scrollTop.value', scrollTop.value)
   // 初始索引 = 滚动距离 / 每一项的高度
-  const startIndex = Math.floor(scrollTop.value / itemHeight.value)
+  startIndex.value = Math.floor(scrollTop.value / itemHeight.value)
   // 结束索引 = 初始索引 + 容器高度 / 每一项的高度
-  const endIndex = Math.ceil(startIndex + viewHeight.value / itemHeight.value) 
-  // 根据初始索引和结束索引，截取数据
-  showData.value = transferContactList.value.slice(startIndex, endIndex)
+  endIndex.value = Math.ceil(startIndex.value + viewHeight.value / itemHeight.value) 
 }
-
 </script>
 
 <template>
   <div class="view-content person-info-view" @scroll="handleScroll">
-    <div class="contact-content-container" :style="{height: `${transferContactList.length * itemHeight}px`}" >
+    <div class="contact-content-container" :style="{height: scrollViewHeight}" >
       <!-- 为了正确实现滚动效果。偏移量一直和scrollTop相同，那就没有滚动效果了就只是渲染区域数据改变-->
       <!-- 所以这里不要要让他进行偏移让他随着父元素去滚动，当滚动距离（scrollTop）大于等于'一个item'
         (也就是下面计算公式如果有御书说明是在item上滚动当余数为0说明正好item滚动结束了)时候才算一个item的偏移量 -->
       <div class="item-container "
-      :style="{ transform: `translateY(${scrollTop - (scrollTop % itemHeight)}px)`}">
+      :style="{ transform: `translateY(${transferY}px)`}">
         <div class="item person-info-card" v-for="(item, index) in showData" :key="index">
           {{ item.phoneNo }}
         </div>
