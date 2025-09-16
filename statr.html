@@ -20,27 +20,40 @@
     activeEffect = fn
     fn()
   }
-  const bucket = new Set()
+  // 创建一个有依赖关系的桶
+  const bucket = new WeakMap()
   const obj = new Proxy(data, {
     get(target, key) {
-      if (activeEffect) {
-        bucket.add(activeEffect)
+      if (!activeEffect) return target[key]
+      let depsMap = bucket.get(target)
+      if (!depsMap) {
+        bucket.set(target, depsMap = new Map())
       }
+      let deps = depsMap.get(key)
+      if (!deps) {
+        deps = new Set()
+        depsMap.set(key, deps)
+      }
+      deps.add(activeEffect)
       return target[key]
     },
     set(target, key, newValue) {
       target[key] = newValue
-      bucket.forEach(fn => fn())
+      const depsMap = bucket.get(target)
+      if (!depsMap) return
+      const deps = depsMap.get(key)
+      if (!deps) return
+      deps.forEach(fn => fn())
     }
   })
 
-  effect(() => document.body.innerHTML = obj.text)
-
-
+  effect(() => {
+    console.log('effect run --')
+    document.body.innerHTML = obj.text;
+  })
 
   setTimeout(() => {
     obj.text = 'cs'
-    console.log(obj)
   }, 1000);
 
 </script>
