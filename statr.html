@@ -18,11 +18,24 @@
 
   let activeEffect = undefined;
   const data = {
+    flag: true,
     text: 'hello',
   }
   function effect(fn) {
-    activeEffect = fn
-    fn()
+    const effectFn = function () {
+      clearup(effectFn)
+      activeEffect = effectFn
+      fn()
+    }
+    effectFn.deps = []
+    effectFn()
+  }
+  function clearup(effectFn) {
+    let deps = effectFn.deps
+    for (let i = 0; i < deps.length; i++) {
+      deps[i].delete(effectFn)
+    }
+    deps.length = 0
   }
   // 创建一个有依赖关系的桶
   // WeakMap 对 key 是弱引用，不影响垃圾回收器的工
@@ -54,22 +67,28 @@
       depsMap.set(key, deps = new Set())
     }
     deps.add(activeEffect)
+    activeEffect.deps.push(deps)
   }
   function trigger(target, key) {
     let depsMap = bucket.get(target)
     if (!depsMap) return
     let deps = depsMap.get(key)
     if (!deps) return
-    deps.forEach(fn => fn())
+    // deps.forEach(fn => fn())
+    const depsToRun = new Set(deps)
+    depsToRun.forEach(fn => fn())
   }
 
   effect(() => {
     console.log('effect run --')
-    document.body.innerHTML = obj.text;
+    document.body.innerHTML = obj.flag ? obj.text : 'not';
   })
 
   setTimeout(() => {
-    obj.text = 'cs'
+    obj.flag = false
   }, 1000);
-
+  setTimeout(() => {
+    // 此时还是会执行副作用函数
+    obj.text = 'cs'
+  }, 2000);
 </script>
