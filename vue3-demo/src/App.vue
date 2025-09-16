@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import VirtuallyList from './components/VirtuallyList.vue'
+const arr: AnyObj = {}
 type TransferPersonInfo = {
     name: string
     phone: string
@@ -33,7 +34,7 @@ getContactList().then((res) => {
 <template>
     <div class="box"></div>
     <div style="height: 400px">
-        <VirtuallyList  :listData="transferContactList" v-slot="slotProps">
+        <VirtuallyList :listData="transferContactList" v-slot="slotProps">
             <div class="item" style="height: 28px;">
                 {{ slotProps.item.phoneNo }}
             </div>
@@ -43,10 +44,11 @@ getContactList().then((res) => {
 </template>
 
 <style scoped>
-html{
+html {
     padding-top: 400px !important;
 }
-.item{
+
+.item {
     display: flex;
     justify-content: center;
     align-items: center;

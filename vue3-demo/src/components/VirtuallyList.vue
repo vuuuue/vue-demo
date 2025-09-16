@@ -7,6 +7,8 @@ type TransferPersonInfo = {
   id: string
   phoneNo: string
 }
+const arr: AnyObj = {}
+
 const props = defineProps({
   // 真实数据
   listData: {
@@ -20,7 +22,7 @@ const props = defineProps({
     type: String,
     default: '100%'
   },
-  buffer:{
+  buffer: {
     type: Number,
     default: 10
   }
@@ -30,11 +32,11 @@ const items = ref<(Element[])>([])
 // item高度
 const itemHeight = ref(0)
 onUpdated(() => {
-    if (itemHeight.value) return
-    if (items.value && items.value.length) {
-      const { height } = items.value[0].getBoundingClientRect()
-      itemHeight.value = height
-    }
+  if (itemHeight.value) return
+  if (items.value && items.value.length) {
+    const { height } = items.value[0].getBoundingClientRect()
+    itemHeight.value = height
+  }
 })
 // 滚动区域高度--用于充开滚动条
 const scrollHeight = computed(() => {
@@ -73,7 +75,7 @@ const scrollHandle = (e: Event) => {
 </script>
 
 <template>
-  <div ref="viewContent" class="view-content" @scroll="scrollHandle" :style="{height}">
+  <div ref="viewContent" class="view-content" @scroll="scrollHandle" :style="{ height }">
     <div class="scroll-content" :style="{ height: scrollHeight + 'px' }">
       <div class="item-container" :style="{ transform: `translateY(${offsetY}px` }">
         <div ref="items" class="item" v-for="(item, index) in visibleData" :key="index">
@@ -90,6 +92,7 @@ const scrollHandle = (e: Event) => {
   position: relative;
   overflow: auto;
 }
+
 .item-container {
   overflow: hidden;
 }
