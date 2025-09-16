@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+</body>
+
+</html>
+<script>
+  const data = {
+    text: 'hello',
+  }
+  function effect() {
+    document.body.innerHTML = obj.text
+  }
+  const bucket = new Set()
+  const obj = new Proxy(data, {
+    get(target, key) {
+      bucket.add(effect)
+      return target[key]
+    },
+    set(target, key, newValue) {
+      target[key] = newValue
+      bucket.forEach(fn => fn())
+    }
+  })
+
+  effect()
+
+
+
+  setTimeout(() => {
+    obj.text = 'cs'
+    console.log(obj)
+  }, 1000);
+
+</script>
