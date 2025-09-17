@@ -21,6 +21,7 @@
   // 7.通过lazy实现非立即运行effect
   // 8.通过lazy实现commputed
   // 9.为computed添加缓存功能
+  // 10.effect内嵌的computed
 
   let activeEffect = undefined;
   let effectStack = []
@@ -156,13 +157,13 @@
     let dirty = true
     const effectFn = effect(getter, {
       scheduler() {
-        console.log('zhixingzang');
-
         dirty = true
+        trigger(obj, 'value')
       }, lazy: true
     })
     let obj = {
       get value() {
+        track(obj, 'value')
         if (dirty) {
           value = effectFn()
           dirty = false
@@ -175,14 +176,17 @@
   }
 
   const sumRes = computed(() => {
-    console.log('run effect');
     return obj.foo + obj.bar
   }
   )
-  console.log(sumRes.value);
-  console.log(sumRes.value);
-  obj.foo++
-  console.log(sumRes.value);
+  effect(() => {
+    console.log('effect run ');
+    console.log(sumRes.value);
+  })
+  setTimeout(() => {
+    obj.foo++
+  }, 1000);
+
 
 
 </script>
