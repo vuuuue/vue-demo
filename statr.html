@@ -22,6 +22,7 @@
   // 8.通过lazy实现commputed
   // 9.为computed添加缓存功能
   // 10.effect内嵌的computed
+  // 11.watch
 
   let activeEffect = undefined;
   let effectStack = []
@@ -179,14 +180,45 @@
     return obj.foo + obj.bar
   }
   )
-  effect(() => {
-    console.log('effect run ');
-    console.log(sumRes.value);
+  // effect(() => {
+  //   console.log('effect run ');
+  //   console.log(sumRes.value);
+  // })
+  // setTimeout(() => {
+  //   obj.foo++
+  // }, 1000);
+  function watch(v, cb) {
+    let getter;
+    if (typeof v === 'function') {
+      getter = v
+    } else {
+      getter = () => t(v)
+    }
+    effect(getter, {
+      scheduler(eff) {
+        cb()
+      }
+    })
+  }
+  function t(source, seen = new Set()) {
+    if (source === null || typeof source !== 'object' || seen.has(source)) return;
+    seen.add(source)
+
+    for (let k in source) {
+      t(source[k], seen)
+    }
+    return source
+  }
+  watch(() => obj.foo, () => {
+    console.log('watch zhixing');
+    console.log(obj.foo);
   })
   setTimeout(() => {
     obj.foo++
   }, 1000);
-
+  setTimeout(() => {
+    obj.bar++
+  }, 2000);
 
 
 </script>
