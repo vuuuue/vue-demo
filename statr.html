@@ -20,6 +20,7 @@
   // 6.调度与使用调度进行次数控制（类似修改响应式数据但只会触发一次更新）
   // 7.通过lazy实现非立即运行effect
   // 8.通过lazy实现commputed
+  // 9.为computed添加缓存功能
 
   let activeEffect = undefined;
   let effectStack = []
@@ -151,17 +152,37 @@
   // }, 1000);
 
   function computed(getter) {
-    const effectFn = effect(getter, { lazy: true })
+    let value;
+    let dirty = true
+    const effectFn = effect(getter, {
+      scheduler() {
+        console.log('zhixingzang');
+
+        dirty = true
+      }, lazy: true
+    })
     let obj = {
       get value() {
-        return effectFn()
+        if (dirty) {
+          value = effectFn()
+          dirty = false
+          return value
+        }
+        return value
       }
     }
     return obj
   }
 
-  const sumRes = computed(() => obj.foo + obj.bar)
-  console.log(sumRes);
+  const sumRes = computed(() => {
+    console.log('run effect');
+    return obj.foo + obj.bar
+  }
+  )
+  console.log(sumRes.value);
+  console.log(sumRes.value);
+  obj.foo++
+  console.log(sumRes.value);
 
 
 </script>
