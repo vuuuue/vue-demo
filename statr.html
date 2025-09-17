@@ -18,6 +18,7 @@
   // 4.effect的嵌套问题
   // 5.effect的无限循环
   // 6.调度与使用调度进行次数控制（类似修改响应式数据但只会触发一次更新）
+  // 7.通过lazy实现非立即运行effect
 
   let activeEffect = undefined;
   let effectStack = []
@@ -40,7 +41,7 @@
   const data = {
     foo: 1
   }
-  function effect(fn, options) {
+  function effect(fn, options = {}) {
     const effectFn = function () {
       clearup(effectFn)
       activeEffect = effectFn
@@ -51,7 +52,10 @@
     }
     effectFn.deps = []
     effectFn.options = options
-    effectFn()
+    if (!options.lazy) {
+      effectFn()
+    }
+    return effectFn
   }
   function clearup(effectFn) {
     let deps = effectFn.deps
@@ -102,7 +106,7 @@
     const depsToRun = new Set(deps)
     depsToRun.forEach(fn => {
       if (fn !== activeEffect) {
-        if (fn.options) {
+        if (fn.options.scheduler) {
           fn.options.scheduler(fn)
         } else {
           fn()
@@ -125,20 +129,25 @@
   //   })
   //   temp1 = obj.foo
   // })
-  effect(() => {
+  let eft = effect(() => {
     console.log('effect run --', obj.foo)
   }, {
     scheduler(fn) {
       jobQueue.add(fn)
       jobFlush()
-    }
+    },
+    lazy: true
   })
+  console.log(obj.foo);
+  obj.foo++
+  setTimeout(() => {
+    eft()
+    obj.foo++
+    obj.foo++
+    obj.foo++
+    console.log(obj.foo);
 
-  obj.foo++
-  obj.foo++
-  obj.foo++
-  obj.foo++
-  obj.foo++
+  }, 1000);
 
 
 </script>
