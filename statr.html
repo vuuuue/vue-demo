@@ -23,6 +23,7 @@
   // 9.为computed添加缓存功能
   // 10.effect内嵌的computed
   // 11.watch
+  // 12.获取watch的旧值和新值
 
   let activeEffect = undefined;
   let effectStack = []
@@ -194,11 +195,16 @@
     } else {
       getter = () => t(v)
     }
-    effect(getter, {
+    let oldV, newV
+    const effectFn = effect(getter, {
+      lazy: true,
       scheduler(eff) {
-        cb()
+        newV = eff()
+        cb(newV, oldV)
+        oldV = newV
       }
     })
+    oldV = effectFn()
   }
   function t(source, seen = new Set()) {
     if (source === null || typeof source !== 'object' || seen.has(source)) return;
@@ -209,15 +215,15 @@
     }
     return source
   }
-  watch(() => obj.foo, () => {
-    console.log('watch zhixing');
+  watch(() => obj.foo, (n, o) => {
+    console.log('watch zhixing', n, o);
     console.log(obj.foo);
   })
   setTimeout(() => {
     obj.foo++
   }, 1000);
   setTimeout(() => {
-    obj.bar++
+    obj.foo++
   }, 2000);
 
 
