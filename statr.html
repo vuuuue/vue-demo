@@ -15,17 +15,22 @@
   // 1.简单的响应式数据
   // 2.非其固定命名的副作用函数
   // 3.更改没有依赖的键也会执行，对对象和键添加依赖的响应式数据
+  // effect的嵌套问题
 
   let activeEffect = undefined;
+  let effectStack = []
   const data = {
-    flag: true,
-    text: 'hello',
+    foo: 'foo',
+    bar: 'bar',
   }
   function effect(fn) {
     const effectFn = function () {
       clearup(effectFn)
       activeEffect = effectFn
+      effectStack.push(effectFn)
       fn()
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1];
     }
     effectFn.deps = []
     effectFn()
@@ -79,16 +84,22 @@
     depsToRun.forEach(fn => fn())
   }
 
-  effect(() => {
-    console.log('effect run --')
-    document.body.innerHTML = obj.flag ? obj.text : 'not';
+  // effect(() => {
+  //   console.log('effect run --')
+  //   document.body.innerHTML = obj.flag ? obj.text : 'not';
+  // })
+  let temp1, temp2
+  effect(function effectFoo() {
+    console.log('effect1执行--');
+    // temp1 = obj.foo
+    effect(function effectBar() {
+      console.log('effect2执行--');
+      temp2 = obj.bar
+    })
+    temp1 = obj.foo
   })
 
   setTimeout(() => {
-    obj.flag = false
+    obj.foo = 'foo1'
   }, 1000);
-  setTimeout(() => {
-    // 此时还是会执行副作用函数
-    obj.text = 'cs'
-  }, 2000);
 </script>
